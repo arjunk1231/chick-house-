@@ -1,0 +1,10 @@
+{
+  "name": "CHICK HOUSE",
+  "short_name": "CHICK HOUSE",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#101010",
+  "theme_color": "#ff7628",
+  "description": "CHICK HOUSE Restaurant Management App"
+}
