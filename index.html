@@ -1,0 +1,604 @@
+!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CHICK HOUSE | Restaurant System</title>
+
+<style>
+:root {
+    --bg: #101010;
+    --panel: #1b1b1b;
+    --orange: #ff7628;
+    --text: #ffffff;
+    --muted: #aaaaaa;
+    --green: #55d98a;
+    --red: #ff5252;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+}
+
+header {
+    background: #080808;
+    padding: 18px;
+    border-bottom: 2px solid var(--orange);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.logo {
+    font-size: 25px;
+    font-weight: 900;
+    letter-spacing: 2px;
+}
+
+.logo span {
+    color: var(--orange);
+}
+
+header small {
+    color: var(--muted);
+}
+
+nav {
+    display: flex;
+    gap: 8px;
+    padding: 12px;
+    overflow-x: auto;
+    background: #151515;
+}
+
+nav button, button {
+    cursor: pointer;
+    border: none;
+    border-radius: 8px;
+    padding: 11px 14px;
+    font-weight: bold;
+}
+
+nav button {
+    background: #292929;
+    color: white;
+    white-space: nowrap;
+}
+
+nav button.active,
+.primary {
+    background: var(--orange);
+    color: #111;
+}
+
+main {
+    padding: 18px;
+    max-width: 1200px;
+    margin: auto;
+}
+
+h2 {
+    margin-top: 8px;
+}
+
+.muted {
+    color: var(--muted);
+}
+
+.stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 12px;
+    margin: 20px 0;
+}
+
+.card, .product, .order, .cart {
+    background: var(--panel);
+    border: 1px solid #303030;
+    border-radius: 12px;
+    padding: 16px;
+}
+
+.stat-value {
+    color: var(--orange);
+    font-size: 25px;
+    font-weight: bold;
+    margin-top: 10px;
+}
+
+.layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1.5fr) minmax(270px, 1fr);
+    gap: 18px;
+}
+
+.menu-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(145px, 1fr));
+    gap: 12px;
+}
+
+.product {
+    text-align: center;
+}
+
+.product .emoji {
+    font-size: 42px;
+    margin: 6px;
+}
+
+.product h3 {
+    font-size: 16px;
+    min-height: 36px;
+}
+
+.price {
+    color: var(--orange);
+    font-size: 19px;
+    font-weight: bold;
+    margin: 10px 0;
+}
+
+.product button {
+    width: 100%;
+}
+
+.cart {
+    align-self: start;
+}
+
+.cart-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 0;
+    border-bottom: 1px solid #333;
+}
+
+.small-btn {
+    padding: 6px 10px;
+    background: #333;
+    color: white;
+}
+
+input, select, textarea {
+    width: 100%;
+    padding: 12px;
+    margin: 7px 0 12px;
+    border: 1px solid #444;
+    border-radius: 7px;
+    background: #111;
+    color: white;
+}
+
+label {
+    color: #ddd;
+    font-size: 13px;
+}
+
+.total {
+    display: flex;
+    justify-content: space-between;
+    margin: 18px 0;
+    font-size: 21px;
+    font-weight: bold;
+}
+
+.primary {
+    width: 100%;
+    padding: 14px;
+}
+
+.secondary {
+    background: #333;
+    color: white;
+}
+
+.danger {
+    background: #4b2020;
+    color: #ffaaaa;
+}
+
+.status {
+    display: inline-block;
+    background: #3b2a1d;
+    color: #ffb477;
+    padding: 6px 9px;
+    border-radius: 6px;
+    font-size: 12px;
+}
+
+.order {
+    margin-bottom: 12px;
+}
+
+.order h3 {
+    color: var(--orange);
+}
+
+.order-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 12px;
+}
+
+.order-actions button {
+    flex: 1;
+}
+
+.hidden {
+    display: none !important;
+}
+
+.empty {
+    padding: 25px;
+    text-align: center;
+    color: var(--muted);
+}
+
+footer {
+    padding: 25px;
+    text-align: center;
+    color: #777;
+    font-size: 12px;
+}
+
+@media (max-width: 700px) {
+    .layout {
+        grid-template-columns: 1fr;
+    }
+
+    header {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    main {
+        padding: 12px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <div>
+        <div class="logo">Chick <span>House</span></div>
+        <small>PREMIUM BURGERS • LOADED FRIES</small>
+    </div>
+    <div  id="clock" class="muted"></div>
+</header>
+
+<nav>
+    <button class="active" data-page="dashboard">Dashboard</button>
+    <button data-page="billing">Billing / POS</button>
+    <button data-page="kitchen">Kitchen Orders</button>
+    <button data-page="orders">All Orders</button>
+    <button data-page="inventory">Inventory</button>
+</nav>
+
+<main>
+
+<!-- DASHBOARD -->
+<section id="dashboard" class="page">
+    <h2>Restaurant Dashboard</h2>
+    <p class="muted">Welcome to your CHICK HOUSE  management system.</p>
+
+    <div class="stats">
+        <div class="card">
+            <div class="muted">Today's Sales</div>
+            <div class="stat-value" id="sales">₹0</div>
+        </div>
+        <div class="card">
+            <div class="muted">Total Orders</div>
+            <div class="stat-value" id="orderCount">0</div>
+        </div>
+        <div class="card">
+            <div class="muted">Preparing</div>
+            <div class="stat-value" id="preparingCount">0</div>
+        </div>
+        <div class="card">
+            <div class="muted">Ready</div>
+            <div class="stat-value" id="readyCount">0</div>
+        </div>
+    </div>
+
+    <div class="card">
+        <h3>Quick Actions</h3>
+        <button class="primary" onclick="showPage('billing')">+ Create New Order</button>
+        <button class="secondary" onclick="showPage('kitchen')">Open Kitchen</button>
+    </div>
+
+    <h3>Recent Orders</h3>
+    <div id="recentOrders"></div>
+</section>
+
+<!-- BILLING -->
+<section id="billing" class="page hidden">
+    <h2>Billing & Point of Sale</h2>
+    <p class="muted">Select items to create a customer order.</p>
+
+    <div class="layout">
+        <div>
+            <label>Search Menu</label>
+            <input id="search" placeholder="Search burgers, fries..." oninput="renderMenu()">
+
+            <div id="menu" class="menu-grid"></div>
+        </div>
+
+        <div class="cart">
+            <h3>Current Order</h3>
+
+            <label>Customer Name</label>
+            <input id="customer" placeholder="Customer name (optional)">
+
+            <label>Order Type</label>
+            <select id="orderType">
+                <option>Dine-in</option>
+                <option>Takeaway</option>
+                <option>Delivery</option>
+            </select>
+
+            <label>Table Number / Delivery Address</label>
+            <input id="details" placeholder="Table number or address">
+
+            <label>Special Instructions</label>
+            <textarea id="notes" rows="2" placeholder="Extra cheese, no onions..."></textarea>
+
+            <div id="cartItems"></div>
+
+            <div class="total">
+                <span>Total</span>
+                <span id="cartTotal">₹0</span>
+            </div>
+
+            <label>Payment Method</label>
+            <select id="payment">
+                <option>Cash</option>
+                <option>UPI</option>
+                <option>Card</option>
+                <option>Pay on Delivery</option>
+            </select>
+
+            <button class="primary" onclick="placeOrder()">PLACE ORDER</button>
+            <button class="secondary" style="width:100%;margin-top:8px"
+                onclick="clearCart()">Clear Cart</button>
+        </div>
+    </div>
+</section>
+
+<!-- KITCHEN -->
+<section id="kitchen" class="page hidden">
+    <h2>🔥 Kitchen Display System</h2>
+    <p class="muted">Manage orders from preparation to completion.</p>
+
+    <div class="stats">
+        <div class="card">
+            <div class="muted">New</div>
+            <div class="stat-value" id="newKitchen">0</div>
+        </div>
+        <div class="card">
+            <div class="muted">Preparing</div>
+            <div class="stat-value" id="prepKitchen">0</div>
+        </div>
+        <div class="card">
+            <div class="muted">Ready</div>
+            <div class="stat-value" id="readyKitchen">0</div>
+        </div>
+    </div>
+
+    <div id="kitchenOrders"></div>
+</section>
+
+<!-- ALL ORDERS -->
+<section id="orders" class="page hidden">
+    <h2>All Orders</h2>
+    <div id="allOrders"></div>
+</section>
+
+<!-- INVENTORY -->
+<section id="inventory" class="page hidden">
+    <h2>Inventory Management</h2>
+    <p class="muted">Track ingredient quantities. This prototype does not
+    automatically deduct ingredients when orders are placed.</p>
+
+    <div class="card">
+        <label>Ingredient Name</label>
+        <input id="ingredientName" placeholder="e.g. Burger buns">
+
+        <label>Quantity</label>
+        <input id="ingredientQty" type="number" min="0" step="0.1" placeholder="e.g. 50">
+
+        <label>Unit</label>
+        <select id="ingredientUnit">
+            <option>pieces</option>
+            <option>kg</option>
+            <option>grams</option>
+            <option>litres</option>
+            <option>packets</option>
+        </select>
+
+        <button class="primary" onclick="addIngredient()">Add Ingredient</button>
+    </div>
+
+    <div id="inventoryList" style="margin-top:15px"></div>
+</section>
+
+</main>
+
+<footer>
+    HALO CHICK © 2026 • Restaurant Management System
+</footer>
+
+<script>
+const menuItems = [
+    {id:1, name:"Classic Chicken Burger", price:149, emoji:"🍔"},
+    {id:2, name:"Crispy Chicken Burger", price:179, emoji:"🍔"},
+    {id:3, name:"Spicy Chicken Burger", price:189, emoji:"🌶️"},
+    {id:4, name:"Double Chicken Burger", price:249, emoji:"🍔"},
+    {id:5, name:"Classic Loaded Fries", price:129, emoji:"🍟"},
+    {id:6, name:"Cheese Loaded Fries", price:169, emoji:"🧀"},
+    {id:7, name:"Spicy Loaded Fries", price:179, emoji:"🍟"},
+    {id:8, name:"French Fries", price:89, emoji:"🍟"},
+    {id:9, name:"Cold Drink", price:49, emoji:"🥤"},
+    {id:10, name:"Burger Combo", price:229, emoji:"🍔"}
+];
+
+let cart = {};
+
+function readStorage(key, fallback) {
+    try {
+        const value = localStorage.getItem(key);
+        return value ? JSON.parse(value) : fallback;
+    } catch {
+        return fallback;
+    }
+}
+
+let orders = readStorage("haloOrders", []);
+let inventory = readStorage("haloInventory", []);
+
+function saveData() {
+    localStorage.setItem("haloOrders", JSON.stringify(orders));
+    localStorage.setItem("haloInventory", JSON.stringify(inventory));
+}
+
+function money(amount) {
+    return "₹" + Number(amount).toLocaleString("en-IN", {
+        maximumFractionDigits: 2
+    });
+}
+
+function showPage(page) {
+    document.querySelectorAll(".page").forEach(p => {
+        p.classList.add("hidden");
+    });
+
+    document.getElementById(page).classList.remove("hidden");
+
+    document.querySelectorAll("nav button").forEach(b => {
+        b.classList.toggle("active", b.dataset.page === page);
+    });
+
+    renderAll();
+}
+
+document.querySelectorAll("nav button").forEach(button => {
+    button.addEventListener("click", () => showPage(button.dataset.page));
+});
+
+function renderMenu() {
+    const query = document.getElementById("search").value.toLowerCase();
+
+    const items = menuItems.filter(item =>
+        item.name.toLowerCase().includes(query)
+    );
+
+    document.getElementById("menu").innerHTML = items.map(item => `
+        <div class="product">
+            <div class="emoji">${item.emoji}</div>
+            <h3>${item.name}</h3>
+            <div class="price">${money(item.price)}</div>
+            <button class="primary" onclick="addToCart(${item.id})">
+                + Add
+            </button>
+        </div>
+    `).join("");
+}
+
+function addToCart(id) {
+    cart[id] = (cart[id] || 0) + 1;
+    renderCart();
+}
+
+function changeQty(id, amount) {
+    cart[id] = (cart[id] || 0) + amount;
+
+    if (cart[id] <= 0) {
+        delete cart[id];
+    }
+
+    renderCart();
+}
+
+function renderCart() {
+    const items = Object.entries(cart);
+
+    if (!items.length) {
+        document.getElementById("cartItems").innerHTML =
+            '<div class="empty">Your cart is empty.</div>';
+    } else {
+        document.getElementById("cartItems").innerHTML = items.map(([id, qty]) => {
+            const item = menuItems.find(p => p.id === Number(id));
+
+            return `
+                <div class="cart-row">
+                    <div>
+                        <strong>${item.name}</strong><br>
+                        <span class="muted">${money(item.price)} × ${qty}</span>
+                    </div>
+                    <div>
+                        <button class="small-btn"
+                            onclick="changeQty(${id}, -1)">−</button>
+                        <button class="small-btn"
+                            onclick="changeQty(${id}, 1)">+</button>
+                    </div>
+                </div>
+            `;
+        }).join("");
+    }
+
+    document.getElementById("cartTotal").textContent = money(getTotal());
+}
+
+function getTotal() {
+    return Object.entries(cart).reduce((sum, [id, qty]) => {
+        const item = menuItems.find(p => p.id === Number(id));
+        return sum + item.price * qty;
+    }, 0);
+}
+
+function clearCart() {
+                            onclick="removeIngredient(${item.id})">Remove</button>
+                    </div>
+                </div>
+                ${item.qty <= 5 ?
+                    '<span class="status">Check stock level</span>' : ""}
+            </div>
+        `).join("")
+        : '<div class="empty">No ingredients added yet.</div>';
+}
+
+function renderAll() {
+    renderMenu();
+    renderCart();
+    renderKitchen();
+    renderOrders();
+    renderDashboard();
+    renderInventory();
+}
+
+function updateClock() {
+    document.getElementById("clock").textContent =
+        new Date().toLocaleString("en-IN");
+}
+
+renderAll();
+updateClock();
+setInterval(updateClock, 1000);
+</script>
+
+</body>
+</html>
