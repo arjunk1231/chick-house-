@@ -780,12 +780,16 @@ function renderInventory() {
         `).join("")
         : '<div class="empty">No ingredients added yet.</div>';
 }
+    }
+
+function renderAll() {
     renderMenu();
     renderCart();
     renderKitchen();
     renderOrders();
     renderDashboard();
     renderInventory();
+                        }
 }
 
 function updateClock() {
