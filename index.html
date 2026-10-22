@@ -267,11 +267,28 @@ padding: 16px;
 }
 
 }
+    .login-brand {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0 auto 20px;
+}
+
+.login-brand img {
+    display: block;
+    width: 120px;
+    height: 120px;
+    object-fit: contain;
+    border-radius: 18px;
+}
 </style>
 </head>
 <body>
 <section id="loginScreen"><form id="loginForm" class="login-card">
-<div class="logo">CHICK <span>HOUSE</span></div><h1>Welcome back</h1><p class="muted">Sign in to the restaurant system.</p>
+<div class="login-brand">
+  <img src="./icon.png" alt="CHICK HOUSE Logo">
+</div>
+<h1>Welcome back</h1> class="muted">Sign in to the restaurant system.</p>
 <label for="loginRole">Login type</label><select id="loginRole"><option value="owner">Owner — Username &amp; Password</option><option value="staff">Staff — Username &amp; PIN</option></select>
 <label for="loginUser">Username</label><input id="loginUser" autocomplete="username" required placeholder="Enter username">
 <div id="passwordField"><label for="loginPassword">Password</label><input id="loginPassword" type="password" autocomplete="current-password" placeholder="Enter owner password"></div>
