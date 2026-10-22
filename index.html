@@ -574,17 +574,212 @@ function getTotal() {
 }
 
 function clearCart() {
-                            onclick="removeIngredient(${item.id})">Remove</button>
-                    </div>
+    cart = {};
+    renderCart();
+}
+
+function placeOrder() {
+    if (Object.keys(cart).length === 0) {
+        alert("Please add items to your order first!");
+        return;
+    }
+
+    const order = {
+        id: Date.now(),
+        customer: document.getElementById("customer").value.trim() || "Walk-in Customer",
+        type: document.getElementById("orderType").value,
+        details: document.getElementById("details").value.trim(),
+        notes: document.getElementById("notes").value.trim(),
+        payment: document.getElementById("payment").value,
+        items: Object.entries(cart).map(([id, qty]) => {
+            const item = menuItems.find(p => p.id === Number(id));
+            return {
+                id: item.id,
+                name: item.name,
+                price: item.price,
+                qty: qty
+            };
+        }),
+        total: getTotal(),
+        status: "New",
+        time: new Date().toISOString()
+    };
+
+    orders.unshift(order);
+    saveData();
+
+    cart = {};
+    document.getElementById("customer").value = "";
+    document.getElementById("details").value = "";
+    document.getElementById("notes").value = "";
+
+    renderAll();
+    showPage("kitchen");
+
+    alert("Order placed successfully!");
+}
+
+function renderKitchen() {
+    const newOrders = orders.filter(o => o.status === "New");
+    const preparing = orders.filter(o => o.status === "Preparing");
+    const ready = orders.filter(o => o.status === "Ready");
+
+    document.getElementById("newKitchen").textContent = newOrders.length;
+    document.getElementById("prepKitchen").textContent = preparing.length;
+    document.getElementById("readyKitchen").textContent = ready.length;
+
+    const activeOrders = orders.filter(o =>
+        o.status === "New" ||
+        o.status === "Preparing" ||
+        o.status === "Ready"
+    );
+
+    document.getElementById("kitchenOrders").innerHTML =
+        activeOrders.length
+        ? activeOrders.map(order => `
+            <div class="order">
+                <h3>Order #${order.id.toString().slice(-5)}</h3>
+                <p>${order.customer} · ${order.type}</p>
+                <p>${order.items.map(item =>
+                    `${item.name} × ${item.qty}`
+                ).join("<br>")}</p>
+                <p><strong>Total: ${money(order.total)}</strong></p>
+                <p>Status: <span class="status">${order.status}</span></p>
+                <div class="order-actions">
+                    ${order.status === "New" ? `
+                        <button class="primary"
+                            onclick="updateOrderStatus(${order.id}, 'Preparing')">
+                            Start Preparing
+                        </button>` : ""}
+                    ${order.status === "Preparing" ? `
+                        <button class="primary"
+                            onclick="updateOrderStatus(${order.id}, 'Ready')">
+                            Mark Ready
+                        </button>` : ""}
+                    ${order.status === "Ready" ? `
+                        <button class="primary"
+                            onclick="updateOrderStatus(${order.id}, 'Completed')">
+                            Complete Order
+                        </button>` : ""}
                 </div>
-                ${item.qty <= 5 ?
-                    '<span class="status">Check stock level</span>' : ""}
+            </div>
+        `).join("")
+        : '<div class="empty">No active kitchen orders.</div>';
+}
+
+function updateOrderStatus(id, status) {
+    const order = orders.find(o => o.id === id);
+    if (!order) return;
+
+    order.status = status;
+    saveData();
+    renderAll();
+}
+
+function renderOrders() {
+    document.getElementById("allOrders").innerHTML =
+        orders.length
+        ? orders.map(order => `
+            <div class="order">
+                <h3>Order #${order.id.toString().slice(-5)}</h3>
+                <p>Customer: ${order.customer}</p>
+                <p>Type: ${order.type}</p>
+                <p>Payment: ${order.payment}</p>
+                <p>Items: ${order.items.map(item =>
+                    `${item.name} × ${item.qty}`
+                ).join(", ")}</p>
+                <p><strong>Total: ${money(order.total)}</strong></p>
+                <p>Status: <span class="status">${order.status}</span></p>
+                <small class="muted">
+                    ${new Date(order.time).toLocaleString("en-IN")}
+                </small>
+            </div>
+        `).join("")
+        : '<div class="empty">No orders yet.</div>';
+}
+
+function renderDashboard() {
+    const today = new Date().toDateString();
+
+    const todaysOrders = orders.filter(order =>
+        new Date(order.time).toDateString() === today
+    );
+
+    document.getElementById("sales").textContent =
+        money(todaysOrders.reduce((sum, order) =>
+            sum + (order.status === "Completed" ? order.total : 0), 0));
+
+    document.getElementById("orderCount").textContent =
+        todaysOrders.length;
+
+    document.getElementById("preparingCount").textContent =
+        orders.filter(o => o.status === "Preparing").length;
+
+    document.getElementById("readyCount").textContent =
+        orders.filter(o => o.status === "Ready").length;
+
+    document.getElementById("recentOrders").innerHTML =
+        orders.length
+        ? orders.slice(0, 5).map(order => `
+            <div class="order">
+                <strong>Order #${order.id.toString().slice(-5)}</strong>
+                <p>${order.customer} · ${money(order.total)}</p>
+                <span class="status">${order.status}</span>
+            </div>
+        `).join("")
+        : '<div class="empty">No orders yet.</div>';
+}
+
+function addIngredient() {
+    const name = document.getElementById("ingredientName").value.trim();
+    const qty = Number(document.getElementById("ingredientQty").value);
+    const unit = document.getElementById("ingredientUnit").value;
+
+    if (!name || document.getElementById("ingredientQty").value === "" ||
+        !Number.isFinite(qty) || qty < 0) {
+        alert("Enter a valid ingredient name and quantity.");
+        return;
+    }
+
+    inventory.push({
+        id: Date.now(),
+        name: name,
+        qty: qty,
+        unit: unit
+    });
+
+    saveData();
+
+    document.getElementById("ingredientName").value = "";
+    document.getElementById("ingredientQty").value = "";
+
+    renderInventory();
+}
+
+function removeIngredient(id) {
+    inventory = inventory.filter(item => item.id !== id);
+    saveData();
+    renderInventory();
+}
+
+function renderInventory() {
+    document.getElementById("inventoryList").innerHTML =
+        inventory.length
+        ? inventory.map(item => `
+            <div class="order">
+                <strong>${item.name}</strong>
+                <p>Quantity: ${item.qty} ${item.unit}</p>
+                <button class="danger"
+                    onclick="removeIngredient(${item.id})">
+                    Remove
+                </button>
+                ${item.qty <= 5
+                    ? '<p><span class="status">Check stock level</span></p>'
+                    : ""}
             </div>
         `).join("")
         : '<div class="empty">No ingredients added yet.</div>';
 }
-
-function renderAll() {
     renderMenu();
     renderCart();
     renderKitchen();
