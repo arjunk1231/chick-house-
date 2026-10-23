@@ -1,1 +1,352 @@
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#ff7628">
+<title>CHICK HOUSE | Restaurant System</title>
+<link rel="manifest" href="./manifest.json">
+<style>
+:root{--bg:#101010;--panel:#1b1b1b;--orange:#ff7628;--text:#fff;--muted:#aaa}
+*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:var(--bg);color:var(--text)}
+header{background:#080808;padding:18px;border-bottom:2px solid var(--orange);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
+.logo{font-size:25px;font-weight:900;letter-spacing:2px}.logo span{color:var(--orange)}header small{color:var(--muted)}
+nav{display:flex;gap:8px;padding:12px;overflow-x:auto;background:#151515}button{cursor:pointer;border:0;border-radius:8px;padding:11px 14px;font-weight:bold}
+nav button{background:#292929;color:white;white-space:nowrap}nav button.active,.primary{background:var(--orange);color:#111}
+main{padding:18px;max-width:1200px;margin:auto}h2{margin-top:8px}.muted{color:var(--muted)}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin:20px 0}
+.card,.product,.order,.cart{background:var(--panel);border:1px solid #303030;border-radius:12px;padding:16px}
+.stat-value{color:var(--orange);font-size:25px;font-weight:bold;margin-top:10px}.layout{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(270px,1fr);gap:18px}
+.menu-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:12px}.product{text-align:center}.emoji{font-size:42px;margin:6px}
+.product h3{font-size:16px;min-height:36px}.price{color:var(--orange);font-size:19px;font-weight:bold;margin:10px 0}.product button{width:100%}
+.cart{align-self:start}.cart-row{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:12px 0;border-bottom:1px solid #333}
+.small-btn{padding:6px 10px;background:#333;color:white}input,select,textarea{width:100%;padding:12px;margin:7px 0 12px;border:1px solid #444;border-radius:7px;background:#111;color:white}
+label{color:#ddd;font-size:13px}.total{display:flex;justify-content:space-between;margin:18px 0;font-size:21px;font-weight:bold}
+.primary{padding:14px}.secondary{background:#333;color:white}.danger{background:#4b2020;color:#ffaaaa}
+.status{display:inline-block;background:#3b2a1d;color:#ffb477;padding:6px 9px;border-radius:6px;font-size:12px}
+.hidden{display:none!important}.empty{padding:25px;text-align:center;color:var(--muted)}.order{margin-bottom:12px;overflow-wrap:anywhere}.order h3{color:var(--orange)}
+.order-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}.order-actions button{flex:1}footer{padding:25px;text-align:center;color:#777;font-size:12px}
+#loginScreen{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;background:radial-gradient(circle at top,#382014,#101010 60%)}
+.login-card{width:100%;max-width:420px;background:#1b1b1b;border:1px solid #443126;border-radius:18px;padding:25px;box-shadow:0 12px 40px #0008}
+.login-card h1{margin:0 0 5px}.login-card .logo{margin-bottom:22px}.login-card button{width:100%;margin-top:8px}.login-error{color:#ff8585;min-height:20px;font-size:14px}.security-note{font-size:12px;line-height:1.5;color:#aaa}
+.user-bar{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.user-bar button{padding:8px 12px}
+@media(max-width:700px){.layout{grid-template-columns:1fr}header{align-items:flex-start;flex-direction:column}main{padding:12px}}
+/* CHICK HOUSE MOBILE POS DESIGN */
+html {
+width: 100%;
+max-width: 100%;
+overflow-x: clip;
+-webkit-text-size-adjust: 100%;
+}
+
+body {
+width: 100%;
+max-width: 100%;
+min-width: 0;
+margin: 0;
+overflow-x: clip;
+}
+
+button {
+min-height: 46px;
+font-size: 15px;
+touch-action: manipulation;
+}
+
+input, select, textarea {
+width: 100%;
+max-width: 100%;
+min-height: 46px;
+font-size: 16px;
+}
+
+header {
+gap: 10px;
+}
+
+main {
+width: 100%;
+max-width: 1200px;
+min-width: 0;
+}
+
+.layout > *, .stats > *, .menu-grid > * {
+min-width: 0;
+}
+
+nav {
+position: sticky;
+top: 0;
+z-index: 100;
+scrollbar-width: none;
+-webkit-overflow-scrolling: touch;
+}
+
+nav::-webkit-scrollbar {
+display: none;
+}
+
+nav button {
+flex-shrink: 0;
+min-height: 44px;
+}
+
+.product, .card, .order, .cart {
+overflow-wrap: anywhere;
+}
+
+@media screen and (max-width: 700px) {
+header {
+padding: 14px;
+flex-direction: column;
+align-items: stretch;
+}
+
+.logo {
+    font-size: 23px;
+    letter-spacing: 1px;
+}
+
+header small {
+    font-size: 12px;
+}
+
+nav {
+    padding: 8px;
+    gap: 7px;
+}
+
+nav button {
+    padding: 10px 13px;
+    font-size: 13px;
+}
+
+main {
+    padding: 12px 10px 24px;
+}
+
+h2 {
+    font-size: 21px;
+    line-height: 1.3;
+}
+
+h3 {
+    line-height: 1.35;
+}
+
+.layout {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 14px;
+}
+
+.stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 9px;
+    margin: 14px 0;
+}
+
+.card, .product, .order, .cart {
+    padding: 12px;
+    border-radius: 10px;
+}
+
+.stat-value {
+    font-size: 21px;
+    overflow-wrap: anywhere;
+}
+
+.menu-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 9px;
+}
+
+.product {
+    text-align: center;
+}
+
+.product h3 {
+    font-size: 14px;
+    min-height: 0;
+}
+
+.emoji {
+    font-size: 32px;
+}
+
+.price {
+    font-size: 17px;
+    margin: 8px 0;
+}
+
+.product button {
+    width: 100%;
+    padding: 10px 5px;
+    font-size: 13px;
+}
+
+.cart {
+    width: 100%;
+}
+
+.cart-row {
+    flex-wrap: wrap;
+    gap: 8px;
+    font-size: 14px;
+}
+
+.total {
+    font-size: 19px;
+    gap: 10px;
+}
+
+.order-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.order-actions button {
+    flex: 1 1 120px;
+}
+
+.user-bar {
+    width: 100%;
+    gap: 8px;
+}
+
+.login-card {
+    padding: 22px 17px;
+    border-radius: 15px;
+}
+
+.login-card h1 {
+    font-size: 25px;
+}
+
+footer {
+    padding: 20px 10px;
+}
+
+}
+
+@media screen and (max-width: 360px) {
+main {
+padding: 10px 7px 20px;
+}
+
+.menu-grid {
+    gap: 7px;
+}
+
+.product, .card {
+    padding: 9px;
+}
+
+.product h3 {
+    font-size: 13px;
+}
+
+.stat-value {
+    font-size: 18px;
+}
+
+}
+
+@media screen and (min-width: 701px) and (max-width: 1024px) {
+main {
+padding: 16px;
+}
+
+.layout {
+    grid-template-columns: minmax(0, 1.2fr) minmax(250px, 1fr);
+    gap: 14px;
+}
+
+.menu-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+}
+    .login-brand {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0 auto 20px;
+}
+
+.login-brand img {
+    display: block;
+    width: 120px;
+    height: 120px;
+    object-fit: contain;
+    border-radius: 18px;
+}
+</style>
+</head>
+<body>
+<section id="loginScreen"><form id="loginForm" class="login-card">
+<div class="login-brand">
+  <img src="./icon.png" alt="CHICK HOUSE Logo">
+</div>
+<h1>Welcome back</h1>
+<p class="muted">Sign in to the restaurant system.</p>
+<label for="loginRole">Login type</label><select id="loginRole"><option value="owner">Owner — Username &amp; Password</option><option value="staff">Staff — Username &amp; PIN</option></select>
+<label for="loginUser">Username</label><input id="loginUser" autocomplete="username" required placeholder="Enter username">
+<div id="passwordField"><label for="loginPassword">Password</label><input id="loginPassword" type="password" autocomplete="current-password" placeholder="Enter owner password"></div>
+<div id="pinField" class="hidden"><label for="loginPin">Staff PIN</label><input id="loginPin" type="password" inputmode="numeric" maxlength="8" placeholder="4–8 digit PIN"></div>
+<button class="primary" type="submit">LOGIN</button><p id="loginError" class="login-error" role="alert"></p>
+<p class="security-note">Initial demo login: owner / ChangeMe123! and staff / 1234. Change these in Settings. This browser-only login is not strong security; someone who can inspect the website code or browser storage may bypass it.</p>
+</form></section>
+<div id="appShell" class="hidden">
+<header><div><div class="logo">CHICK <span>HOUSE</span></div><small>PREMIUM BURGERS • LOADED FRIES</small></div><div class="user-bar"><span id="clock" class="muted"></span><span id="signedInAs" class="muted"></span><button id="logoutBtn" class="secondary" type="button">Logout</button></div></header>
+<nav><button class="active" data-page="dashboard">Dashboard</button><button data-page="billing">Billing / POS</button><button data-page="kitchen">Kitchen Orders</button><button data-page="orders">All Orders</button><button data-page="inventory">Inventory</button><button data-page="reports">Reports</button><button data-page="settings">Settings</button></nav>
+<main>
+<section id="dashboard" class="page"><h2>Restaurant Dashboard</h2><p class="muted">Welcome to your CHICK HOUSE management system.</p><div class="stats">
+<div class="card"><div class="muted">Today's Completed Sales</div><div class="stat-value" id="sales">₹0</div></div><div class="card"><div class="muted">Today's Orders</div><div class="stat-value" id="orderCount">0</div></div><div class="card"><div class="muted">Preparing</div><div class="stat-value" id="preparingCount">0</div></div><div class="card"><div class="muted">Ready</div><div class="stat-value" id="readyCount">0</div></div></div>
+<div class="card"><h3>Quick Actions</h3><button class="primary" data-go="billing">+ Create New Order</button> <button class="secondary" data-go="kitchen">Open Kitchen</button></div><h3>Recent Orders</h3><div id="recentOrders"></div></section>
+<section id="billing" class="page hidden"><h2>Billing &amp; Point of Sale</h2><p class="muted">Select items to create a customer order.</p><div class="layout"><div><label for="search">Search Menu</label><input id="search" placeholder="Search burgers, fries..."><div id="menu" class="menu-grid"></div></div><div class="cart"><h3>Current Order</h3><label for="customer">Customer Name</label><input id="customer" placeholder="Customer name (optional)"><label for="orderType">Order Type</label><select id="orderType"><option>Dine-in</option><option>Takeaway</option><option>Delivery</option></select><label for="details">Table Number / Delivery Address</label><input id="details" placeholder="Table number or address"><label for="notes">Special Instructions</label><textarea id="notes" rows="2" placeholder="Extra cheese, no onions..."></textarea><div id="cartItems"></div><div class="total"><span>Total</span><span id="cartTotal">₹0</span></div><label for="payment">Payment Method</label><select id="payment"><option>Cash</option><option>UPI</option><option>Card</option><option>Pay on Delivery</option></select><button class="primary" id="placeOrderBtn" style="width:100%">PLACE ORDER</button><button class="secondary" id="clearCartBtn" style="width:100%;margin-top:8px">Clear Cart</button></div></div></section>
+<section id="kitchen" class="page hidden"><h2>🔥 Kitchen Display System</h2><p class="muted">Manage orders from preparation to completion.</p><div class="stats"><div class="card"><div class="muted">New</div><div class="stat-value" id="newKitchen">0</div></div><div class="card"><div class="muted">Preparing</div><div class="stat-value" id="prepKitchen">0</div></div><div class="card"><div class="muted">Ready</div><div class="stat-value" id="readyKitchen">0</div></div></div><div id="kitchenOrders"></div></section>
+<section id="orders" class="page hidden"><h2>All Orders</h2><div id="allOrders"></div></section>
+<section id="inventory" class="page hidden"><h2>Inventory Management</h2><p class="muted">Track ingredient quantities.</p><div class="card"><label for="ingredientName">Ingredient Name</label><input id="ingredientName" placeholder="e.g. Burger buns"><label for="ingredientQty">Quantity</label><input id="ingredientQty" type="number" min="0" step="0.1" placeholder="e.g. 50"><label for="ingredientUnit">Unit</label><select id="ingredientUnit"><option>pieces</option><option>kg</option><option>grams</option><option>litres</option><option>packets</option></select><button class="primary" id="addIngredientBtn" style="width:100%">Add Ingredient</button></div><div id="inventoryList" style="margin-top:15px"></div></section>
+<section id="reports" class="page hidden"><h2>Sales Reports</h2><div class="card"><label for="reportDate">Sales date</label><input id="reportDate" type="date"><div class="stats"><div><div class="muted">Completed sales</div><div class="stat-value" id="reportSales">₹0</div></div><div><div class="muted">Completed orders</div><div class="stat-value" id="reportOrders">0</div></div></div></div></section>
+<section id="settings" class="page hidden"><h2>Settings &amp; Accounts</h2><div class="card"><h3>Change owner login</h3><label for="ownerUsername">Owner username</label><input id="ownerUsername"><label for="ownerPassword">New owner password</label><input id="ownerPassword" type="password" placeholder="At least 8 characters"><button id="saveOwnerBtn" class="primary" style="width:100%">Update Owner Login</button></div><div class="card" style="margin-top:12px"><h3>Change staff login</h3><label for="staffUsername">Staff username</label><input id="staffUsername"><label for="staffPin">New staff PIN (4–8 digits)</label><input id="staffPin" type="password" inputmode="numeric" maxlength="8" placeholder="4–8 digit PIN"><button id="saveStaffBtn" class="primary" style="width:100%">Update Staff Login</button></div><p class="security-note">This is a local demo login, not real security. Credentials and data are stored in this browser.</p></section>
+</main><footer>CHICK HOUSE © 2026 • Restaurant Management System</footer></div>
+<script>
+"use strict";
+const MENU=[{id:1,name:"Classic Chicken Burger",price:149,emoji:"🍔"},{id:2,name:"Crispy Chicken Burger",price:179,emoji:"🍔"},{id:3,name:"Spicy Chicken Burger",price:189,emoji:"🌶️"},{id:4,name:"Double Chicken Burger",price:249,emoji:"🍔"},{id:5,name:"Classic Loaded Fries",price:129,emoji:"🍟"},{id:6,name:"Cheese Loaded Fries",price:169,emoji:"🧀"},{id:7,name:"Spicy Loaded Fries",price:179,emoji:"🍟"},{id:8,name:"French Fries",price:89,emoji:"🍟"},{id:9,name:"Cold Drink",price:49,emoji:"🥤"},{id:10,name:"Burger Combo",price:229,emoji:"🍔"}];
+const $=id=>document.getElementById(id), read=(k,d)=>{try{let v=localStorage.getItem(k);return v===null?d:JSON.parse(v)}catch{return d}}, write=(k,v)=>localStorage.setItem(k,JSON.stringify(v)), dateKey=x=>{let d=new Date(x);return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0")}, money=n=>"₹"+Number(n||0).toLocaleString("en-IN",{maximumFractionDigits:2});
+let cart={},orders=read("haloOrders",[]),inventory=read("haloInventory",[]),credentials=read("chickHouseCredentials",{owner:{username:"owner",password:"ChangeMe123!"},staff:{username:"staff",pin:"1234"}}),session=null;
+orders=orders.map(o=>({...o,items:o.items||[],time:o.time||new Date().toISOString(),status:o.status||"New",total:o.total||0}));
+function persist(){write("haloOrders",orders);write("haloInventory",inventory);write("chickHouseCredentials",credentials)}
+function toggleLogin(){let owner=$("loginRole").value==="owner";$("passwordField").classList.toggle("hidden",!owner);$("pinField").classList.toggle("hidden",owner);$("loginPassword").required=owner;$("loginPin").required=!owner}
+$("loginRole").addEventListener("change",toggleLogin);
+$("loginForm").addEventListener("submit",e=>{e.preventDefault();let role=$("loginRole").value,u=$("loginUser").value.trim(),a=credentials[role],ok=a&&u.toLowerCase()===a.username.toLowerCase()&&(role==="owner"?$("loginPassword").value===a.password:$("loginPin").value===a.pin);if(!ok){$("loginError").textContent="Incorrect username, password, or PIN.";return}session={role,username:a.username};sessionStorage.setItem("chickHouseSession",JSON.stringify(session));enterApp()});
+function enterApp(){$("loginScreen").classList.add("hidden");$("appShell").classList.remove("hidden");$("signedInAs").textContent="Signed in: "+session.username+" ("+session.role+")";document.querySelectorAll('[data-page="inventory"],[data-page="reports"],[data-page="settings"]').forEach(b=>b.classList.toggle("hidden",session.role==="staff"));renderAll()}
+function logout(){session=null;sessionStorage.removeItem("chickHouseSession");$("appShell").classList.add("hidden");$("loginScreen").classList.remove("hidden");$("loginForm").reset();$("loginError").textContent="";toggleLogin()}
+$("logoutBtn").addEventListener("click",logout);
+try{let s=JSON.parse(sessionStorage.getItem("chickHouseSession"));if(s&&["owner","staff"].includes(s.role)&&credentials[s.role].username===s.username){session=s;enterApp()}}catch{}
+document.querySelectorAll("nav [data-page]").forEach(b=>b.addEventListener("click",()=>showPage(b.dataset.page)));document.querySelectorAll("[data-go]").forEach(b=>b.addEventListener("click",()=>showPage(b.dataset.go)));
+function showPage(p){if(session.role==="staff"&&["inventory","reports","settings"].includes(p)){alert("Owner access required.");return}document.querySelectorAll(".page").forEach(s=>s.classList.add("hidden"));$(p).classList.remove("hidden");document.querySelectorAll("nav [data-page]").forEach(b=>b.classList.toggle("active",b.dataset.page===p));renderAll()}
+$("search").addEventListener("input",renderMenu);$("placeOrderBtn").addEventListener("click",placeOrder);$("clearCartBtn").addEventListener("click",()=>{cart={};renderCart()});$("addIngredientBtn").addEventListener("click",addIngredient);$("reportDate").value=dateKey(new Date());$("reportDate").addEventListener("change",renderReports);
+function renderMenu(){let q=$("search").value.toLowerCase();$("menu").innerHTML=MENU.filter(i=>i.name.toLowerCase().includes(q)).map(i=>`<div class="product"><div class="emoji">${i.emoji}</div><h3>${i.name}</h3><div class="price">${money(i.price)}</div><button class="primary" data-add="${i.id}">+ Add</button></div>`).join("")}
+function addToCart(id){cart[id]=(cart[id]||0)+1;renderCart()}function changeQty(id,n){cart[id]=(cart[id]||0)+n;if(cart[id]<=0)delete cart[id];renderCart()}function total(){return Object.entries(cart).reduce((s,[id,q])=>s+MENU.find(i=>i.id===+id).price*q,0)}
+function renderCart(){$("cartItems").innerHTML=Object.entries(cart).length?Object.entries(cart).map(([id,q])=>{let i=MENU.find(x=>x.id===+id);return `<div class="cart-row"><div><b>${i.name}</b><br><span class="muted">${money(i.price)} × ${q}</span></div><div><button class="small-btn" data-qty="${id}" data-delta="-1">−</button> <button class="small-btn" data-qty="${id}" data-delta="1">+</button></div></div>`}).join(""):'<div class="empty">Your cart is empty.</div>';$("cartTotal").textContent=money(total())}
+function placeOrder(){if(!Object.keys(cart).length){alert("Please add items first.");return}orders.unshift({id:Date.now(),customer:$("customer").value.trim()||"Walk-in Customer",type:$("orderType").value,details:$("details").value.trim(),notes:$("notes").value.trim(),payment:$("payment").value,items:Object.entries(cart).map(([id,qty])=>{let i=MENU.find(x=>x.id===+id);return{id:i.id,name:i.name,price:i.price,qty}}),total:total(),status:"New",time:new Date().toISOString()});persist();cart={};$("customer").value="";$("details").value="";$("notes").value="";renderAll();showPage("kitchen");alert("Order placed successfully!")}
+function updateStatus(id,status){let o=orders.find(x=>x.id===id);if(o){o.status=status;persist();renderAll()}}
+function renderKitchen(){let active=orders.filter(o=>["New","Preparing","Ready"].includes(o.status));$("newKitchen").textContent=orders.filter(o=>o.status==="New").length;$("prepKitchen").textContent=orders.filter(o=>o.status==="Preparing").length;$("readyKitchen").textContent=orders.filter(o=>o.status==="Ready").length;$("kitchenOrders").innerHTML=active.length?active.map(o=>`<div class="order"><h3>Order #${String(o.id).slice(-5)}</h3><p>${o.customer} · ${o.type}</p><p>${o.items.map(i=>i.name+" × "+i.qty).join("<br>")}</p>${o.notes?`<p>Notes: ${o.notes}</p>`:""}<b>${money(o.total)}</b><p>Status: <span class="status">${o.status}</span></p><div class="order-actions">${o.status==="New"?`<button class="primary" data-status="${o.id}" data-next="Preparing">Start Preparing</button>`:""}${o.status==="Preparing"?`<button class="primary" data-status="${o.id}" data-next="Ready">Mark Ready</button>`:""}${o.status==="Ready"?`<button class="primary" data-status="${o.id}" data-next="Completed">Complete Order</button>`:""}</div></div>`).join(""):'<div class="empty">No active kitchen orders.</div>'}
+function renderOrders(){$("allOrders").innerHTML=orders.length?orders.map(o=>`<div class="order"><h3>Order #${String(o.id).slice(-5)}</h3><p>${o.customer} · ${o.type} · ${o.payment}</p><p>${o.items.map(i=>i.name+" × "+i.qty).join(", ")}</p><b>${money(o.total)}</b><p>Status: <span class="status">${o.status}</span></p><small class="muted">${new Date(o.time).toLocaleString("en-IN")}</small><div class="order-actions"><button class="secondary" data-receipt="${o.id}">Print Receipt</button>${o.status!=="Completed"&&o.status!=="Cancelled"?`<button class="danger" data-cancel="${o.id}">Cancel Order</button>`:""}</div></div>`).join(""):'<div class="empty">No orders yet.</div>'}
+function renderDashboard(){let t=dateKey(new Date()),todays=orders.filter(o=>dateKey(o.time)===t);$("sales").textContent=money(todays.filter(o=>o.status==="Completed").reduce((s,o)=>s+o.total,0));$("orderCount").textContent=todays.length;$("preparingCount").textContent=orders.filter(o=>o.status==="Preparing").length;$("readyCount").textContent=orders.filter(o=>o.status==="Ready").length;$("recentOrders").innerHTML=orders.slice(0,5).map(o=>`<div class="order"><b>Order #${String(o.id).slice(-5)}</b><p>${o.customer} · ${money(o.total)}</p><span class="status">${o.status}</span></div>`).join("")||'<div class="empty">No orders yet.</div>'}
+function addIngredient(){let name=$("ingredientName").value.trim(),raw=$("ingredientQty").value,qty=Number(raw),unit=$("ingredientUnit").value;if(!name||raw===""||!Number.isFinite(qty)||qty<0){alert("Enter a valid ingredient and quantity.");return}inventory.push({id:Date.now(),name,qty,unit});persist();$("ingredientName").value="";$("ingredientQty").value="";renderInventory()}
+function renderInventory(){$("inventoryList").innerHTML=inventory.map(i=>`<div class="order"><b>${i.name}</b><p>Quantity: ${i.qty} ${i.unit}</p><button class="danger" data-remove="${i.id}">Remove</button></div>`).join("")||'<div class="empty">No ingredients added yet.</div>'}
+function renderReports(){let d=$("reportDate").value||dateKey(new Date()),list=orders.filter(o=>o.status==="Completed"&&dateKey(o.time)===d);$("reportSales").textContent=money(list.reduce((s,o)=>s+o.total,0));$("reportOrders").textContent=list.length}
+function saveOwner(){let u=$("ownerUsername").value.trim(),p=$("ownerPassword").value;if(!u||p.length<8){alert("Enter a username and password with at least 8 characters.");return}credentials.owner={username:u,password:p};persist();$("ownerPassword").value="";alert("Owner credentials updated. Log out and log in again.")}
+function saveStaff(){let u=$("staffUsername").value.trim(),p=$("staffPin").value;if(!u||!/^\d{4,8}$/.test(p)){alert("Enter a username and a PIN of 4–8 digits.");return}credentials.staff={username:u,pin:p};persist();$("staffPin").value="";alert("Staff credentials updated.")}
+$("saveOwnerBtn").addEventListener("click",saveOwner);$("saveStaffBtn").addEventListener("click",saveStaff);
+function printReceipt(id){let o=orders.find(x=>x.id===id);if(!o)return;let w=window.open("","_blank","width=420,height=650");if(!w){alert("Allow pop-ups to print.");return}w.document.write(`<html><head><title>CHICK HOUSE Receipt</title><style>body{font-family:monospace;padding:16px;color:#000}.row{display:flex;justify-content:space-between}.line{border-top:1px dashed #000;margin:12px 0}h2,p{text-align:center}</style></head><body><h2>CHICK HOUSE</h2><p>Premium Burgers • Loaded Fries</p><div class="line"></div><p>Order #${String(o.id).slice(-5)}<br>${new Date(o.time).toLocaleString("en-IN")}</p><p>${o.customer}<br>${o.type} / ${o.payment}</p><div class="line"></div>${o.items.map(i=>`<div class="row"><span>${i.name} × ${i.qty}</span><span>${money(i.price*i.qty)}</span></div>`).join("")}<div class="line"></div><div class="row"><b>TOTAL</b><b>${money(o.total)}</b></div><p>Thank you! Visit again.</p><script>window.onload=()=>window.print()<\/script></body></html>`);w.document.close()}
+function renderAll(){renderMenu();renderCart();renderKitchen();renderOrders();renderDashboard();renderInventory();renderReports()}
+function clock(){ $("clock").textContent=new Date().toLocaleString("en-IN")}
+document.addEventListener("click",e=>{let a=e.target.closest("[data-add]");if(a)addToCart(+a.dataset.add);let q=e.target.closest("[data-qty]");if(q)changeQty(+q.dataset.qty,+q.dataset.delta);let s=e.target.closest("[data-status]");if(s)updateStatus(+s.dataset.status,s.dataset.next);let r=e.target.closest("[data-receipt]");if(r)printReceipt(+r.dataset.receipt);let c=e.target.closest("[data-cancel]");if(c){if(confirm("Cancel this order?")){let o=orders.find(x=>x.id===+c.dataset.cancel);if(o)o.status="Cancelled";persist();renderAll()}}let rm=e.target.closest("[data-remove]");if(rm){inventory=inventory.filter(i=>i.id!==+rm.dataset.remove);persist();renderInventory()}});
+toggleLogin();renderAll();clock();setInterval(clock,1000);
+if("serviceWorker" in navigator)window.addEventListener("load",()=>navigator.serviceWorker.register("./sw.js").catch(()=>{}));
+</script></body></html>
